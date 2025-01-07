@@ -1,9 +1,6 @@
 import "dotenv/config";
 
-const config = {
-  databaseUrl: process.env.SUPABASE_URL,
-  apiKey: process.env.SUPABASE_KEY,
-  port: process.env.PORT || 5000,
-};
+export const PORT = process.env.PORT || 3000;
+export const SUPABASE_URL = process.env.SUPABASE_URL
+export const SUPABASE_KEY = process.env.SUPABASE_KEY
 
-export default config;

@@ -1,12 +1,19 @@
 import express from "express";
-import config from "./config/config.js";
+import { PORT } from "./config/config.js";
+import coursesRoute from "./routes/coursesRoutes.js";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello from backend!");
+app.use(express.json());
+
+app.use("/api/courses", coursesRoute);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-app.listen(config.port, () => {
-  console.log(`Server is running on http://localhost:${config.port}`);
-});
+// TODO:
+// - Connect Supabase - done
+// - Fill table courses with data - done
+// - Decide with requests and urls - done
+// - Create models for courses
