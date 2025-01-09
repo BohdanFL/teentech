@@ -11,9 +11,3 @@ app.use("/api/courses", coursesRoute);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-// TODO:
-// - Connect Supabase - done
-// - Fill table courses with data - done
-// - Decide with requests and urls - done
-// - Create models for courses
