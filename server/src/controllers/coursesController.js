@@ -5,18 +5,10 @@ export const getCourses = async (req, res) => {
   try {
     let coursesQuery = Courses.select();
 
-    if (searchQuery) {
-      coursesQuery = Courses.search(searchQuery);
-    }
-    if (price || tags || level) {
-      coursesQuery = Courses.filter(level, price, tags);
-    }
+    coursesQuery = Courses.search(searchQuery);
+    coursesQuery = Courses.filter(level, price, tags);
 
-    const { data: courses, error } = await coursesQuery;
-
-    if (error) {
-      throw new Error(error.message);
-    }
+    const courses = await Courses.getCourses();
 
     res.status(200).json(courses);
   } catch (error) {

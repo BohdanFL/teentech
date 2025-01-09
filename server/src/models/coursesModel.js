@@ -3,9 +3,34 @@ import supabase from "../config/supabaseClient.js";
 class Courses {
   static query;
 
+  static async getData() {
+    const { data, error } = await this.query;
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data;
+  }
+
   static select(queryParams = "*") {
     this.query = supabase.from("courses").select(queryParams);
     return this.query;
+  }
+
+  static search(searchQuery) {
+    if (searchQuery) {
+      this.query = supabase.rpc("search_courses", {
+        search_query: searchQuery,
+      });
+    }
+    return this.query;
+  }
+
+  static async searchData(searchQuery) {
+    let { data, error } = await this.search(searchQuery);
+
+    if (error) throw new Error(error.message);
+    return data;
   }
 
   static filter(level, price, tags) {
@@ -40,20 +65,6 @@ class Courses {
     const tagsQuery = tagsArr.map((tag) => `tags_text.cs.{${tag}}`).join(",");
     this.query = this.query.or(tagsQuery);
     return this.query;
-  }
-
-  static search(searchQuery) {
-    this.query = supabase.rpc("search_courses", {
-      search_query: searchQuery,
-    });
-    return this.query;
-  }
-
-  static async searchData(searchQuery) {
-    let { data, error } = await this.search(searchQuery);
-
-    if (error) throw new Error(error.message);
-    return data;
   }
 }
 
