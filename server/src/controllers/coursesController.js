@@ -1,15 +1,22 @@
 import Courses from "../models/coursesModel.js";
 
 export const getCourses = async (req, res) => {
+  const { price, tags, level, search: searchQuery } = req.query;
   try {
-    console.lo
-    const { search: searchQuery, price, tags, difficulty } = req.query;
+    let coursesQuery = Courses.select();
 
-    if (!searchQuery) {
-      return res.status(400).json({ message: "Search query is required." });
+    if (searchQuery) {
+      coursesQuery = Courses.search(searchQuery);
+    }
+    if (price || tags || level) {
+      coursesQuery = Courses.filter(level, price, tags);
     }
 
-    const courses = await Courses.search(searchQuery);
+    const { data: courses, error } = await coursesQuery;
+
+    if (error) {
+      throw new Error(error.message);
+    }
 
     res.status(200).json(courses);
   } catch (error) {
