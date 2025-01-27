@@ -1,35 +1,26 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Container } from "@chakra-ui/react";
+import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
+import CourseContent from "./pages/CourseContent";
+import { Grid, GridItem } from "@chakra-ui/react";
+
+import { SearchProvider } from "@/context/SearchContext"; // Імпортуємо SearchProvider
 
 function App() {
-  const [count, setCount] = useState(0)
+    return (
+        <SearchProvider>
+            <Navbar />
+            <Grid px="60px" templateColumns="repeat(6, 1fr)">
+                <GridItem mr="24px" colSpan={{ base: 6, lg: 2, xl: 1 }}>
+                    <Sidebar />
+                </GridItem>
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+                <GridItem colSpan={{ base: 6, lg: 4, xl: 5 }}>
+                    <CourseContent />
+                </GridItem>
+            </Grid>
+        </SearchProvider>
+    );
 }
 
-export default App
+export default App;

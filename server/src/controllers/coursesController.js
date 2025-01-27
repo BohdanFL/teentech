@@ -8,7 +8,7 @@ export const getCourses = async (req, res) => {
     coursesQuery = Courses.search(searchQuery);
     coursesQuery = Courses.filter(level, price, tags);
 
-    const courses = await Courses.getCourses();
+    const courses = await Courses.getData();
 
     res.status(200).json(courses);
   } catch (error) {

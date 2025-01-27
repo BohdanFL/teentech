@@ -18,6 +18,7 @@ class Courses {
   }
 
   static search(searchQuery) {
+    console.log(searchQuery);
     if (searchQuery) {
       this.query = supabase.rpc("search_courses", {
         search_query: searchQuery,
