@@ -1,18 +1,21 @@
-import Navbar from "@/components/Navbar";
-import CourseContent from "./pages/CourseContent";
-import { Grid, GridItem } from "@chakra-ui/react";
-import { SearchProvider } from "@/context/SearchContext"; // Імпортуємо SearchProvider
-
+import { Flex } from "@chakra-ui/react";
+import Login from "./pages/Login";
+import Register from "./pages/SignUp";
+import { Routes, Route } from "react-router";
 function App() {
     return (
-        <SearchProvider>
-            <Navbar />
-            <Grid px="60px" templateColumns="repeat(6, 1fr)">
-                <GridItem colSpan={6}>
-                    <CourseContent />
-                </GridItem>
-            </Grid>
-        </SearchProvider>
+        <Flex
+            flexDirection="column"
+            width="100wh"
+            height="100vh"
+            backgroundColor="gray.200"
+            justifyContent="center"
+            alignItems="center">
+            <Routes>
+                <Route index element={<Login />} />
+                <Route path="signup" element={<Register />} />
+            </Routes>
+        </Flex>
     );
 }
 
