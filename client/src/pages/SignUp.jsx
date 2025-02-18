@@ -13,7 +13,22 @@ import { Link as ChakraLink } from "@chakra-ui/react";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Avatar, AvatarGroup } from "@/components/ui/avatar";
 
-const Login = () => {
+import api from "@/api/api";
+import { useForm } from "react-hook-form";
+
+const SignUp = () => {
+    const { register, handleSubmit } = useForm();
+
+    const onSubmit = ({ email, password, username }) => {
+        api.post("/api/signup", {
+            email,
+            password,
+            username,
+        }).then((result) => {
+            console.log(result);
+        });
+    };
+
     return (
         <>
             <Stack
@@ -26,7 +41,7 @@ const Login = () => {
                 </Avatar>
                 <Heading color="teal.400">Welcome</Heading>
                 <Box minW={{ base: "90%", md: "468px" }}>
-                    <form>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <Stack
                             spacing={4}
                             p="1rem"
@@ -37,6 +52,9 @@ const Login = () => {
                                 <Input
                                     type="text"
                                     placeholder="enter your nickname"
+                                    {...register("username", {
+                                        required: true,
+                                    })}
                                 />
                                 <Field.ErrorText>
                                     This is an error text
@@ -47,6 +65,7 @@ const Login = () => {
                                 <Input
                                     type="email"
                                     placeholder="me@example.com"
+                                    {...register("email", { required: true })}
                                 />
                                 <Field.ErrorText>
                                     This is an error text
@@ -55,7 +74,12 @@ const Login = () => {
                             <Field.Root mb={3} label="Password">
                                 <Field.Label>Password</Field.Label>
 
-                                <PasswordInput placeholder="password" />
+                                <PasswordInput
+                                    placeholder="password"
+                                    {...register("password", {
+                                        required: true,
+                                    })}
+                                />
                                 <Field.ErrorText>
                                     This is an error text
                                 </Field.ErrorText>
@@ -82,4 +106,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default SignUp;
