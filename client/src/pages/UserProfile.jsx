@@ -10,11 +10,12 @@ const UserProfile = () => {
     const { accessToken, isAuthenticated, logout } = useAuth();
 
     // Чекаємо, поки завантаження автентифікації завершиться
-    useEffect(() => {
-        if (isAuthenticated && !accessToken) {
-            navigate("/");
-        }
-    }, [accessToken, isAuthenticated, navigate]);
+    // useEffect(() => {
+    //     if (isAuthenticated && !accessToken) {
+    //         navigate("/");
+    //     }
+    //     console.log("Give me a fuckin shit");
+    // }, [accessToken, isAuthenticated]);
 
     const fetchUser = async () => {
         const response = await api.get("/api/protected", {

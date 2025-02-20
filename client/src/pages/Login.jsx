@@ -18,7 +18,10 @@ import { useAuth } from "@/context/AuthContext";
 const Login = () => {
     const navigate = useNavigate();
     const { register, handleSubmit } = useForm();
-    const { login } = useAuth();
+    const { isAuthenticated, accessToken, login } = useAuth();
+
+    if (isAuthenticated && accessToken) return "You are logged in";
+
     return (
         <>
             <Stack

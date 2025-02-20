@@ -25,8 +25,9 @@ export const AuthProvider = ({ children }) => {
                 setIsAuthenticated(true); // Завершили перевірку автентифікації
             }
         };
-
-        refresh();
+        if (isAuthenticated) {
+            refresh();
+        }
     }, []);
     console.log("AuthProvider Rendered: ", accessToken);
 
@@ -71,6 +72,7 @@ export const AuthProvider = ({ children }) => {
     // Функція скидання паролю
     const resetPassword = async (email) => {
         try {
+            console.log(email);
             const response = await api.post("/api/reset-password", { email });
             console.log("Reset Password Response: ", response);
         } catch (error) {
@@ -121,7 +123,9 @@ export const AuthProvider = ({ children }) => {
 
     // Оновлюємо токен після завантаження сторінки
     useEffect(() => {
-        refreshToken();
+        if (isAuthenticated) {
+            refreshToken();
+        }
     }, [refreshToken]);
 
     return (
