@@ -7,11 +7,9 @@ import {
     Field,
     AvatarFallback,
 } from "@chakra-ui/react";
-import React, { useRef } from "react";
-import { Link } from "react-router";
-import { Link as ChakraLink } from "@chakra-ui/react";
+import { useLocation, useNavigate } from "react-router";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Avatar, AvatarGroup } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
@@ -24,6 +22,12 @@ const UpdatePassword = () => {
         formState: { errors },
     } = useForm();
     const { updatePassword } = useAuth();
+    const navigate = useNavigate();
+
+    const { hash } = useLocation();
+    const params = new URLSearchParams(hash.slice(1));
+    const access_token = params.get("access_token");
+    const refresh_token = params.get("refresh_token");
 
     return (
         <>
@@ -38,12 +42,16 @@ const UpdatePassword = () => {
                 <Heading color="teal.400">Create New Password</Heading>
                 <Box minW={{ base: "90%", md: "468px" }}>
                     <form
-                        onSubmit={handleSubmit(
-                            ({ password, confirmPassword }) => {
-                                updatePassword(password, confirmPassword);
-                                // console.log(password.current);
-                            }
-                        )}>
+                        onSubmit={handleSubmit(({ newPassword }) => {
+                            updatePassword(
+                                newPassword,
+                                access_token,
+                                refresh_token
+                            );
+                            setTimeout(() => {
+                                navigate("/");
+                            }, 2000);
+                        })}>
                         <Stack
                             spacing={4}
                             p="1rem"
@@ -52,12 +60,12 @@ const UpdatePassword = () => {
                             <Field.Root
                                 invalid={!!errors.password}
                                 mb={3}
-                                label="Password">
-                                <Field.Label>Password</Field.Label>
+                                label="New Password">
+                                <Field.Label>New Password</Field.Label>
 
                                 <PasswordInput
-                                    placeholder="password"
-                                    {...register("password", {
+                                    placeholder="New password"
+                                    {...register("newPassword", {
                                         required: "You must specify a password",
                                         minLength: {
                                             value: 8,
@@ -67,8 +75,8 @@ const UpdatePassword = () => {
                                     })}
                                 />
                                 <Field.ErrorText>
-                                    {errors.password && (
-                                        <p>{errors.password.message}</p>
+                                    {errors.newPassword && (
+                                        <p>{errors.newPassword.message}</p>
                                     )}
                                 </Field.ErrorText>
                             </Field.Root>

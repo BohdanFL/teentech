@@ -1,5 +1,10 @@
 import express from "express";
-import { signUp, signIn, logOut, refreshTokenMethod } from "../controllers/authenticationController.js";
+import {
+  signUp,
+  signIn,
+  logOut,
+  refreshTokenMethod,
+} from "../controllers/authenticationController.js";
 import cookieParser from "cookie-parser";
 import authenticateMIddleware from "../middleware/authenticateMIddleware.js";
 import supabase from "../config/supabaseClient.js";
@@ -8,109 +13,126 @@ const router = express.Router();
 router.use(cookieParser());
 
 router.post("/signup", async (req, res) => {
-    const { email, password, username } = req.body;
+  const { email, password, username } = req.body;
 
-    if (!email || !username || !password) {
-        return res.status(400).json({ message: "No email, username, or password provided." });
-    }
+  if (!email || !username || !password) {
+    return res
+      .status(400)
+      .json({ message: "No email, username, or password provided." });
+  }
 
-    try {
-        const signUpSuccess = await signUp(email, password, username);
-        if (!signUpSuccess) {
-            return res.status(500).json({ message: "Error signing up user." });
-        }
-        return res.status(200).json({ data: signUpSuccess });
-    } catch (error) {
-        return res.status(500).json({ message: "Internal Server Error", error: error.message });
+  try {
+    const signUpSuccess = await signUp(email, password, username);
+    if (!signUpSuccess) {
+      return res.status(500).json({ message: "Error signing up user." });
     }
+    return res.status(200).json({ data: signUpSuccess });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
 });
 
 router.post("/login", async (req, res) => {
-    const {email, password} = req.body;
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({message: "No email or password provided."});
-    }
+  if (!email || !password) {
+    return res.status(400).json({ message: "No email or password provided." });
+  }
 
-    try {
-        const signInSuccess = await signIn(email, password);
+  try {
+    const signInSuccess = await signIn(email, password);
 
-        res.cookie("refreshToken", signInSuccess.refresh_token, {
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 7 * 1000,
-        })
+    res.cookie("refreshToken", signInSuccess.refresh_token, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 7 * 1000,
+    });
 
-        res.cookie("accessToken", signInSuccess.access_token, {
-            httpOnly: true,
-            maxAge: 6 * 6 * 1000 * 100,
-        })
+    res.cookie("accessToken", signInSuccess.access_token, {
+      httpOnly: true,
+      maxAge: 6 * 6 * 1000 * 100,
+    });
 
-        return res.status(200).json({data: signInSuccess, message: "cookie has been sent."})
-    } catch (error) {
-        return res.status(500).json({error})
-    }
-})
+    return res
+      .status(200)
+      .json({
+        data: signInSuccess.access_token,
+        message: "cookie has been sent.",
+      });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+});
 
 router.get("/protected", authenticateMIddleware, (req, res) => {
-    res.json({user: req.user})
-})
+  res.json({ user: req.user });
+});
 
 router.post("/logOut", logOut);
 
 router.get("/refresh-token", async (req, res) => {
-    if (!req.cookies.refreshToken) {
-        console.error("No refreshToken stored in cookies provided.")
-    }
-    
-    const refresh_token = req.cookies.refreshToken;
+  if (!req.cookies.refreshToken) {
+    console.error("No refreshToken stored in cookies provided.");
+  }
 
-    if (!refresh_token) {
-        return res.status(400).json({message: "No refresh token provided."})
-    }
+  const refresh_token = req.cookies.refreshToken;
 
-    const refreshedSession = await refreshTokenMethod(refresh_token);
+  if (!refresh_token) {
+    return res.status(400).json({ message: "No refresh token provided." });
+  }
 
-    res.json({
-        accessToken: refreshedSession.session.access_token,
-        expiresIn: refreshedSession.session.expires_in,
-    })
+  const refreshedSession = await refreshTokenMethod(refresh_token);
 
-});    
+  res.json({
+    accessToken: refreshedSession.session.access_token,
+    expiresIn: refreshedSession.session.expires_in,
+  });
+});
 
 router.post("/reset-password", async (req, res) => {
-    const {email} = req.body;
+  const { email } = req.body;
 
-    if (!email) {
-        return res.status(400).json({message:"No email provided."})
-    } 
+  if (!email) {
+    return res.status(400).json({ message: "No email provided." });
+  }
 
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'http://localhost:3000/update-password',
-    })
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: "http://localhost:5173/update-password",
+  });
 
-    if (error) throw error;
+  if (error) throw error;
 
-    return res.status(200).json({message:"Redirect to update-password endpoint"})
-})
+  return res
+    .status(200)
+    .json({ message: "Password recovery email has been sent." });
+});
 
 router.patch("/update-password", async (req, res) => {
-    const {newPassword, confirmPassword} = req.body;
+  const { newPassword, access_token, refresh_token } = req.body;
 
-    if (!newPassword || !confirmPassword) {
-        console.error("No new password provided.");
-    }
+  if (!access_token || !newPassword || !refresh_token) {
+    return res
+      .status(400)
+      .json({ message: "Tokens and new password are required." });
+  }
 
-    if (newPassword == confirmPassword) {
-        console.log("Password confirmed.")
-    }
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.setSession({
+      access_token,
+      refresh_token,
+    });
 
-    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+  const { data, error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
 
-    if (error) throw error;
+  if (error) {
+    console.error("Reset password error:", error);
+    return res.status(400).json({ message: error.message });
+  }
 
-
-    return res.status(200).json({message: "Password successfully updated."})
-
-})
+  res.json({ message: "Password updated successfully." });
+});
 
 export default router;

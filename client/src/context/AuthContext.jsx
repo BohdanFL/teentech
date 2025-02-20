@@ -6,6 +6,7 @@ import React, {
     useCallback,
 } from "react";
 import api from "@/api/api.js"; // API з axios
+import { useNavigate, useSearchParams } from "react-router";
 
 const AuthContext = createContext(null);
 
@@ -72,22 +73,18 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await api.post("/api/reset-password", { email });
             console.log("Reset Password Response: ", response);
-            console.log("Reset Password Data: ", response.data);
-
-            // setAccessToken(response.data.accessToken);
-            // setIsAuthenticated(true);
-            // scheduleTokenRefresh(response.data.expiresIn);
         } catch (error) {
             console.error("Reset Password failed", error);
         }
     };
 
     // Функція зміни паролю
-    const updatePassword = async (confirm, confirmPassword) => {
+    const updatePassword = async (newPassword, access_token, refresh_token) => {
         try {
             const response = await api.patch("/api/update-password", {
-                confirm,
-                confirmPassword,
+                newPassword,
+                access_token,
+                refresh_token,
             });
             console.log("Update Password Response: ", response);
             console.log("Update Password Data: ", response.data);
@@ -132,6 +129,7 @@ export const AuthProvider = ({ children }) => {
             value={{
                 accessToken,
                 isAuthenticated,
+                setAccessToken,
                 login,
                 signup,
                 logout,

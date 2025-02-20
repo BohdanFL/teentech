@@ -32,9 +32,9 @@ const Login = () => {
                 <Heading color="teal.400">Welcome</Heading>
                 <Box minW={{ base: "90%", md: "468px" }}>
                     <form
-                        onSubmit={handleSubmit((data) => {
+                        onSubmit={handleSubmit(async (data) => {
                             console.log(data);
-                            login(data.email, data.password);
+                            await login(data.email, data.password);
                             navigate("/user-profile");
                         })}>
                         <Stack
