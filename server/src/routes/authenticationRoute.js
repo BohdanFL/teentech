@@ -77,22 +77,40 @@ router.get("/refresh-token", async (req, res) => {
 
 });    
 
-// router.post("/reset-password", async (req, res) => {
-//     const {email} = req.body;
+router.post("/reset-password", async (req, res) => {
+    const {email} = req.body;
 
-//     if (!email) {
-//         return res.status(400).json({message:"No email provided."})
-//     } 
+    if (!email) {
+        return res.status(400).json({message:"No email provided."})
+    } 
 
-//     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-//         redirectTo: 'http://localhost:5173/update-password',
-//     })
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'http://localhost:3000/update-password',
+    })
 
-//     if (error) throw error;
+    if (error) throw error;
 
-//     return data;
-// })
+    return res.status(200).json({message:"Redirect to update-password endpoint"})
+})
 
-// router.patch()
+router.patch("/update-password", async (req, res) => {
+    const {newPassword, confirmPassword} = req.body;
+
+    if (!newPassword || !confirmPassword) {
+        console.error("No new password provided.");
+    }
+
+    if (newPassword == confirmPassword) {
+        console.log("Password confirmed.")
+    }
+
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+
+    if (error) throw error;
+
+
+    return res.status(200).json({message: "Password successfully updated."})
+
+})
 
 export default router;
