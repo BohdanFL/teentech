@@ -6,8 +6,8 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "server": "cd ../server && npm start",
-        "start": "concurrently \"vite\" \"npm run server\"",
+        "server": "cd ../server && npm run dev",
+        "start": "concurrently \"npm run server\" \"npm run dev\"",
         "lint": "eslint .",
         "preview": "vite preview"
     },

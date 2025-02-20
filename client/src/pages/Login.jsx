@@ -7,24 +7,18 @@ import {
     Field,
     AvatarFallback,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Link as ChakraLink } from "@chakra-ui/react";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Avatar } from "@/components/ui/avatar";
 
-import api from "@/api/api";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
+    const navigate = useNavigate();
     const { register, handleSubmit } = useForm();
-
-    const onSubmit = ({ email, password }) => {
-        api.post("/api/login", { email, password }).then((result) => {
-            console.log(result);
-        });
-    };
-
+    const { login } = useAuth();
     return (
         <>
             <Stack
@@ -37,7 +31,12 @@ const Login = () => {
                 </Avatar>
                 <Heading color="teal.400">Welcome</Heading>
                 <Box minW={{ base: "90%", md: "468px" }}>
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form
+                        onSubmit={handleSubmit((data) => {
+                            console.log(data);
+                            login(data.email, data.password);
+                            navigate("/user-profile");
+                        })}>
                         <Stack
                             spacing={4}
                             p="1rem"
@@ -68,7 +67,7 @@ const Login = () => {
                                 </Field.ErrorText>
                                 <Field.HelperText w="100%" textAlign="right">
                                     <ChakraLink asChild>
-                                        <Link to="/forgot-password">
+                                        <Link to="/reset-password">
                                             forgot password?
                                         </Link>
                                     </ChakraLink>
