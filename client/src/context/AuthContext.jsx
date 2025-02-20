@@ -67,6 +67,39 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(false);
     };
 
+    // Функція скидання паролю
+    const resetPassword = async (email) => {
+        try {
+            const response = await api.post("/api/reset-password", { email });
+            console.log("Reset Password Response: ", response);
+            console.log("Reset Password Data: ", response.data);
+
+            // setAccessToken(response.data.accessToken);
+            // setIsAuthenticated(true);
+            // scheduleTokenRefresh(response.data.expiresIn);
+        } catch (error) {
+            console.error("Reset Password failed", error);
+        }
+    };
+
+    // Функція зміни паролю
+    const updatePassword = async (confirm, confirmPassword) => {
+        try {
+            const response = await api.patch("/api/update-password", {
+                confirm,
+                confirmPassword,
+            });
+            console.log("Update Password Response: ", response);
+            console.log("Update Password Data: ", response.data);
+
+            // setAccessToken(response.data.accessToken);
+            // setIsAuthenticated(true);
+            // scheduleTokenRefresh(response.data.expiresIn);
+        } catch (error) {
+            console.error("Update Password failed", error);
+        }
+    };
+
     // Функція оновлення токена
     const refreshToken = useCallback(async () => {
         try {
@@ -96,7 +129,15 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider
-            value={{ accessToken, isAuthenticated, login, signup, logout }}>
+            value={{
+                accessToken,
+                isAuthenticated,
+                login,
+                signup,
+                logout,
+                resetPassword,
+                updatePassword,
+            }}>
             {children}
         </AuthContext.Provider>
     );

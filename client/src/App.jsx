@@ -4,6 +4,8 @@ import SignUp from "./pages/SignUp";
 import { Routes, Route } from "react-router";
 import UserProfile from "./pages/UserProfile";
 import Dashboard from "./pages/Dashboard";
+import UpdatePassword from "./pages/UpdatePassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
     return (
@@ -19,6 +21,8 @@ function App() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/user-profile" element={<UserProfile />} />
+                <Route path="/update-password" element={<UpdatePassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
             </Routes>
         </Flex>
     );
