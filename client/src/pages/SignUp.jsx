@@ -13,21 +13,12 @@ import { Link as ChakraLink } from "@chakra-ui/react";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Avatar, AvatarGroup } from "@/components/ui/avatar";
 
-import api from "@/api/api";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/context/AuthContext";
 
 const SignUp = () => {
     const { register, handleSubmit } = useForm();
-
-    const onSubmit = ({ email, password, username }) => {
-        api.post("/api/signup", {
-            email,
-            password,
-            username,
-        }).then((result) => {
-            console.log(result);
-        });
-    };
+    const { signup } = useAuth();
 
     return (
         <>
@@ -41,7 +32,12 @@ const SignUp = () => {
                 </Avatar>
                 <Heading color="teal.400">Welcome</Heading>
                 <Box minW={{ base: "90%", md: "468px" }}>
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form
+                        onSubmit={handleSubmit(
+                            ({ email, password, username }) => {
+                                signup(email, password, username);
+                            }
+                        )}>
                         <Stack
                             spacing={4}
                             p="1rem"

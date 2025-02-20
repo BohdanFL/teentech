@@ -57,15 +57,12 @@ router.get("/protected", authenticateMIddleware, (req, res) => {
 
 router.post("/logOut", logOut);
 
-router.post("/refresh-token", async (req, res) => {
+router.get("/refresh-token", async (req, res) => {
     if (!req.cookies.refreshToken) {
         console.error("No refreshToken stored in cookies provided.")
     }
     
     const refresh_token = req.cookies.refreshToken;
-
-
-    console.log(refresh_token)
 
     if (!refresh_token) {
         return res.status(400).json({message: "No refresh token provided."})
@@ -74,11 +71,28 @@ router.post("/refresh-token", async (req, res) => {
     const refreshedSession = await refreshTokenMethod(refresh_token);
 
     res.json({
-        access_token: refreshedSession.session.access_token,
-        refresh_toke: refreshedSession.session.refresh_token,
-        expires_in: refreshedSession.session.expires_in,
+        accessToken: refreshedSession.session.access_token,
+        expiresIn: refreshedSession.session.expires_in,
     })
 
 });    
+
+// router.post("/reset-password", async (req, res) => {
+//     const {email} = req.body;
+
+//     if (!email) {
+//         return res.status(400).json({message:"No email provided."})
+//     } 
+
+//     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+//         redirectTo: 'http://localhost:5173/update-password',
+//     })
+
+//     if (error) throw error;
+
+//     return data;
+// })
+
+// router.patch()
 
 export default router;

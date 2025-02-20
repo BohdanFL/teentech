@@ -1,25 +1,37 @@
 import api from "@/api/api";
+import { useAuth } from "@/context/AuthContext";
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 const UserProfile = () => {
     const navigate = useNavigate();
+    const { accessToken, isAuthenticated, logout } = useAuth();
+
+    // Чекаємо, поки завантаження автентифікації завершиться
+    useEffect(() => {
+        if (isAuthenticated && !accessToken) {
+            navigate("/");
+        }
+    }, [accessToken, isAuthenticated, navigate]);
+
     const fetchUser = async () => {
-        const response = await api.get("/api/protected");
+        const response = await api.get("/api/protected", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
         console.log(response.data);
         return response.data.user.user_metadata;
     };
 
-    const logout = async () => {
-        const response = await api.post("/api/logout");
-        console.log(response);
-        navigate("/");
-    };
-
-    const { isPending, data, error } = useQuery({
+    const {
+        isPending,
+        data: user,
+        error,
+    } = useQuery({
         queryKey: ["user"],
         queryFn: fetchUser,
+        enabled: !!accessToken,
     });
 
     if (isPending) return "Loading...";
@@ -28,9 +40,15 @@ const UserProfile = () => {
     return (
         <Box>
             <Heading>UserProfile</Heading>
-            <Text>Username {data.username}</Text>
-            <Text>Email {data.email}</Text>
-            <Button onClick={logout}></Button>
+            <Text>Username {user.username}</Text>
+            <Text>Email {user.email}</Text>
+            <Button
+                onClick={() => {
+                    logout();
+                    navigate("/");
+                }}>
+                Logout
+            </Button>
         </Box>
     );
 };
