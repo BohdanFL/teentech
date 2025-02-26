@@ -6,6 +6,7 @@ import {
     Stack,
     Field,
     AvatarFallback,
+    HStack,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router";
 import { Link as ChakraLink } from "@chakra-ui/react";
@@ -16,11 +17,9 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
-    const navigate = useNavigate();
     const { register, handleSubmit } = useForm();
-    const { isAuthenticated, accessToken, login } = useAuth();
-
-    if (isAuthenticated && accessToken) return "You are logged in";
+    const { login, signInWithGoogle } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <>
@@ -88,12 +87,24 @@ const Login = () => {
                     </form>
                 </Box>
             </Stack>
-            <Box>
-                New to us?{" "}
-                <ChakraLink color="teal.500" asChild>
-                    <Link to="/signup">Sign Up</Link>
-                </ChakraLink>
-            </Box>
+            <HStack>
+                <Button
+                    borderRadius={10}
+                    type="submit"
+                    variant="solid"
+                    colorPalette="teal"
+                    onClick={() => {
+                        signInWithGoogle();
+                    }}>
+                    Sign In With Google
+                </Button>
+                <Box>
+                    New to us?{" "}
+                    <ChakraLink color="teal.500" asChild>
+                        <Link to="/signup">Sign Up</Link>
+                    </ChakraLink>
+                </Box>
+            </HStack>
         </>
     );
 };

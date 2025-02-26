@@ -6,6 +6,7 @@ import {
     Stack,
     Field,
     AvatarFallback,
+    HStack,
 } from "@chakra-ui/react";
 import React from "react";
 import { Link } from "react-router";
@@ -18,7 +19,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const SignUp = () => {
     const { register, handleSubmit } = useForm();
-    const { signup } = useAuth();
+    const { signup, signInWithGoogle } = useAuth();
 
     return (
         <>
@@ -92,12 +93,25 @@ const SignUp = () => {
                     </form>
                 </Box>
             </Stack>
-            <Box>
-                Already have an account?{" "}
-                <ChakraLink color="teal.500" asChild>
-                    <Link to="/">Login</Link>
-                </ChakraLink>
-            </Box>
+
+            <HStack>
+                <Button
+                    borderRadius={10}
+                    type="submit"
+                    variant="solid"
+                    colorPalette="teal"
+                    onClick={() => {
+                        signInWithGoogle();
+                    }}>
+                    Sign In With Google
+                </Button>
+                <Box>
+                    Already have an account?{" "}
+                    <ChakraLink color="teal.500" asChild>
+                        <Link to="/">Login</Link>
+                    </ChakraLink>
+                </Box>
+            </HStack>
         </>
     );
 };

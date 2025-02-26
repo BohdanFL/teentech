@@ -7,45 +7,34 @@ import { useNavigate } from "react-router";
 
 const UserProfile = () => {
     const navigate = useNavigate();
-    const { accessToken, isAuthenticated, logout } = useAuth();
-
-    // Чекаємо, поки завантаження автентифікації завершиться
-    // useEffect(() => {
-    //     if (isAuthenticated && !accessToken) {
-    //         navigate("/");
+    const { user, logout } = useAuth();
+    console.log(user);
+    // Fetching user data with useQuery.
+    // const fetchUser = async () => {
+    //     const response = await api.get("/protected");
+    //     if (!response.ok && !response.data.user) {
+    //         return new Error("Network response was not ok");
     //     }
-    //     console.log("Give me a fuckin shit");
-    // }, [accessToken, isAuthenticated]);
+    //     console.log(response.data);
+    //     return response.data.user.user_metadata;
+    // };
 
-    const fetchUser = async () => {
-        const response = await api.get("/api/protected", {
-            headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        console.log(response.data);
-        return response.data.user.user_metadata;
-    };
+    // const { isPending, data, error } = useQuery({
+    //     queryKey: ["user"],
+    //     queryFn: fetchUser,
+    // });
 
-    const {
-        isPending,
-        data: user,
-        error,
-    } = useQuery({
-        queryKey: ["user"],
-        queryFn: fetchUser,
-        enabled: !!accessToken,
-    });
-
-    if (isPending) return "Loading...";
-    if (error) return "An error has occured: " + error.message;
+    // if (isPending) return "Loading...";
+    // if (error) return "An error has occured: " + error.message;
 
     return (
         <Box>
             <Heading>UserProfile</Heading>
-            <Text>Username {user.username}</Text>
-            <Text>Email {user.email}</Text>
+            <Text>Username: {user.username ? user.username : "None"}</Text>
+            <Text>Email: {user.email}</Text>
             <Button
-                onClick={() => {
-                    logout();
+                onClick={async () => {
+                    await logout();
                     navigate("/");
                 }}>
                 Logout

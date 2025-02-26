@@ -1,9 +1,13 @@
 import { SUPABASE_KEY, SUPABASE_URL } from "./config.js";
-import { createClient } from "@supabase/supabase-js"
+import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    flowType: "pkce",
+  },
+});
 
 if (!SUPABASE_KEY || !SUPABASE_URL) {
-    console.log(`No supabase key or supabase url provided.`)
+  console.log(`No supabase key or supabase url provided.`);
 }
 export default supabase;

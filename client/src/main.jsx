@@ -10,7 +10,7 @@ import { AuthProvider } from "./context/AuthContext";
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
-    // <StrictMode>
+    <StrictMode>
         <AuthProvider>
             <Provider>
                 <QueryClientProvider client={queryClient}>
@@ -20,5 +20,5 @@ createRoot(document.getElementById("root")).render(
                 </QueryClientProvider>
             </Provider>
         </AuthProvider>
-    // {/* </StrictMode> */}
+    </StrictMode>
 );

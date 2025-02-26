@@ -7,7 +7,7 @@ import {
     Field,
     AvatarFallback,
 } from "@chakra-ui/react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -24,11 +24,6 @@ const UpdatePassword = () => {
     const { updatePassword } = useAuth();
     const navigate = useNavigate();
 
-    const { hash } = useLocation();
-    const params = new URLSearchParams(hash.slice(1));
-    const access_token = params.get("access_token");
-    const refresh_token = params.get("refresh_token");
-
     return (
         <>
             <Stack
@@ -42,15 +37,9 @@ const UpdatePassword = () => {
                 <Heading color="teal.400">Create New Password</Heading>
                 <Box minW={{ base: "90%", md: "468px" }}>
                     <form
-                        onSubmit={handleSubmit(({ newPassword }) => {
-                            updatePassword(
-                                newPassword,
-                                access_token,
-                                refresh_token
-                            );
-                            setTimeout(() => {
-                                navigate("/");
-                            }, 2000);
+                        onSubmit={handleSubmit(async ({ newPassword }) => {
+                            await updatePassword(newPassword);
+                            navigate("/");
                         })}>
                         <Stack
                             spacing={4}
