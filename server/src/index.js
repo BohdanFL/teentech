@@ -4,6 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.js";
+import swaggerSetup from "./docs/swagger.js";
 const app = express();
 
 app.use(express.json());
@@ -17,7 +18,8 @@ app.use(
   })
 );
 
-app.use(authRouter);
+app.use("/api-docs", swaggerSetup);
+app.use("/auth", authRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
