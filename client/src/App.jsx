@@ -5,6 +5,7 @@ import UserProfile from "./pages/UserProfile";
 import UpdatePassword from "./pages/UpdatePassword";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { Toaster } from "@/components/ui/toaster";
 import Auth from "./pages/Auth";
 import { Flex } from "@chakra-ui/react";
 
@@ -19,6 +20,7 @@ function App() {
                 justifyContent="center"
                 alignItems="center">
                 <Auth />
+                <Toaster />
                 <Routes>
                     <Route index element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />

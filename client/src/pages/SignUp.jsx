@@ -12,14 +12,24 @@ import React from "react";
 import { Link } from "react-router";
 import { Link as ChakraLink } from "@chakra-ui/react";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Avatar, AvatarGroup } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
+import { toaster } from "@/components/ui/toaster";
 
 const SignUp = () => {
-    const { register, handleSubmit } = useForm();
+    const {
+        register,
+        formState: { errors },
+        handleSubmit,
+        setError,
+    } = useForm();
     const { signup, signInWithGoogle } = useAuth();
+
+    const onSubmit = async ({ email, password, username }) => {
+        await signup(email, password, username);
+    };
 
     return (
         <>
@@ -33,52 +43,78 @@ const SignUp = () => {
                 </Avatar>
                 <Heading color="teal.400">Welcome</Heading>
                 <Box minW={{ base: "90%", md: "468px" }}>
-                    <form
-                        onSubmit={handleSubmit(
-                            ({ email, password, username }) => {
-                                signup(email, password, username);
-                            }
-                        )}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <Stack
                             spacing={4}
                             p="1rem"
                             backgroundColor="whiteAlpha.900"
                             boxShadow="md">
-                            <Field.Root label="Username" mb={3}>
+                            <Field.Root
+                                invalid={!!errors.username}
+                                label="Username"
+                                mb={3}>
                                 <Field.Label>Username</Field.Label>
                                 <Input
                                     type="text"
-                                    placeholder="enter your nickname"
+                                    placeholder="Enter your nickname"
                                     {...register("username", {
-                                        required: true,
+                                        required: "Username is required",
+                                        minLength: {
+                                            value: 3,
+                                            message:
+                                                "Username must be at least 3 characters long",
+                                        },
                                     })}
                                 />
                                 <Field.ErrorText>
-                                    This is an error text
+                                    {errors.username && errors.username.message}
                                 </Field.ErrorText>
                             </Field.Root>
-                            <Field.Root label="Email" mb={3}>
+                            <Field.Root
+                                invalid={!!errors.email}
+                                label="Email"
+                                mb={3}>
                                 <Field.Label>Email</Field.Label>
                                 <Input
                                     type="email"
                                     placeholder="me@example.com"
-                                    {...register("email", { required: true })}
+                                    {...register("email", {
+                                        required: "Email is required",
+                                        pattern: {
+                                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                            message:
+                                                "Enter a valid email address",
+                                        },
+                                    })}
                                 />
                                 <Field.ErrorText>
-                                    This is an error text
+                                    {errors.email && errors.email.message}
                                 </Field.ErrorText>
                             </Field.Root>
-                            <Field.Root mb={3} label="Password">
+                            <Field.Root
+                                invalid={!!errors.password}
+                                mb={3}
+                                label="Password">
                                 <Field.Label>Password</Field.Label>
 
                                 <PasswordInput
                                     placeholder="password"
                                     {...register("password", {
-                                        required: true,
+                                        required: "Password is required",
+                                        minLength: {
+                                            value: 6,
+                                            message:
+                                                "Password must be at least 6 characters long",
+                                        },
+                                        pattern: {
+                                            value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/,
+                                            message:
+                                                "Password must contain at least one letter and one number",
+                                        },
                                     })}
                                 />
                                 <Field.ErrorText>
-                                    This is an error text
+                                    {errors.password && errors.password.message}
                                 </Field.ErrorText>
                             </Field.Root>
                             <Button

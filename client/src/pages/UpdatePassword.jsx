@@ -23,7 +23,7 @@ const UpdatePassword = () => {
     } = useForm();
     const { updatePassword } = useAuth();
     const navigate = useNavigate();
-
+    console.log(errors);
     return (
         <>
             <Stack
@@ -39,7 +39,6 @@ const UpdatePassword = () => {
                     <form
                         onSubmit={handleSubmit(async ({ newPassword }) => {
                             await updatePassword(newPassword);
-                            navigate("/");
                         })}>
                         <Stack
                             spacing={4}
@@ -47,7 +46,7 @@ const UpdatePassword = () => {
                             backgroundColor="whiteAlpha.900"
                             boxShadow="md">
                             <Field.Root
-                                invalid={!!errors.password}
+                                invalid={!!errors.newPassword}
                                 mb={3}
                                 label="New Password">
                                 <Field.Label>New Password</Field.Label>
@@ -55,18 +54,22 @@ const UpdatePassword = () => {
                                 <PasswordInput
                                     placeholder="New password"
                                     {...register("newPassword", {
-                                        required: "You must specify a password",
+                                        required: "Password is required",
                                         minLength: {
-                                            value: 8,
+                                            value: 6,
                                             message:
-                                                "Password must have at least 8 characters",
+                                                "Password must be at least 6 characters long",
+                                        },
+                                        pattern: {
+                                            value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/,
+                                            message:
+                                                "Password must contain at least one letter and one number",
                                         },
                                     })}
                                 />
                                 <Field.ErrorText>
-                                    {errors.newPassword && (
-                                        <p>{errors.newPassword.message}</p>
-                                    )}
+                                    {errors.newPassword &&
+                                        errors.newPassword.message}
                                 </Field.ErrorText>
                             </Field.Root>
                             <Field.Root
@@ -77,16 +80,16 @@ const UpdatePassword = () => {
                                 <PasswordInput
                                     placeholder="Confirm Password"
                                     {...register("confirmPassword", {
-                                        validate: (value) => {
-                                            value === watch("password") ||
-                                                "The passwords do not match";
-                                        },
+                                        required:
+                                            "Confirm Password is required",
+                                        validate: (value) =>
+                                            value === watch("newPassword") ||
+                                            "The passwords do not match",
                                     })}
                                 />
                                 <Field.ErrorText>
-                                    {errors.confirmPassword && (
-                                        <p>{errors.confirmPassword.message}</p>
-                                    )}
+                                    {errors.confirmPassword &&
+                                        errors.confirmPassword.message}
                                 </Field.ErrorText>
                             </Field.Root>
                             <Button

@@ -7,12 +7,15 @@ import React, {
     useLayoutEffect,
 } from "react";
 import api from "@/api/api.js";
+import { toaster } from "@/components/ui/toaster";
+import { useNavigate } from "react-router";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState();
     const [accessToken, setAccessToken] = useState();
+    const navigate = useNavigate();
     // Отримуємо токен при завантаженні сторінки
     useEffect(() => {
         const refresh = async () => {
@@ -23,11 +26,8 @@ export const AuthProvider = ({ children }) => {
                 setUser(response.data.user);
                 console.log("Refreshing token...");
             } catch (error) {
-                console.error(error);
                 setAccessToken(null);
                 setUser(null);
-            } finally {
-                console.log("Token is refreshed");
             }
         };
 
@@ -90,10 +90,24 @@ export const AuthProvider = ({ children }) => {
 
             setAccessToken(response.data.access_token);
             setUser(response.data.user);
+            navigate("/user-profile");
+            toaster.create({
+                description: "Login Successfully",
+                type: "success",
+            });
         } catch (error) {
             setAccessToken(null);
             setUser(null);
+            toaster.create({
+                title: "Error: Login Failed",
+                description:
+                    error.response?.data?.message || "Something went wrong.",
+                type: "error",
+                duration: 5000,
+                isClosable: true,
+            });
             console.error("Login failed", error);
+            throw new Error(error);
         }
     };
 
@@ -105,10 +119,21 @@ export const AuthProvider = ({ children }) => {
                 password,
                 username,
             });
-
+            toaster.create({
+                description: "Confirm Email has been sent",
+                type: "success",
+            });
             setUser(response.data.user);
         } catch (error) {
             setUser(null);
+            toaster.create({
+                title: "Error: Signup Failed",
+                description:
+                    error.response?.data?.message || "Something went wrong.",
+                type: "error",
+                duration: 5000,
+                isClosable: true,
+            });
             console.error("Signup failed", error);
         }
     };
@@ -117,6 +142,14 @@ export const AuthProvider = ({ children }) => {
         try {
             window.location.href = "http://localhost:3000/auth/google";
         } catch (error) {
+            toaster.create({
+                title: "Error: Signup Failed",
+                description:
+                    error.response?.data?.message || "Something went wrong.",
+                type: "error",
+                duration: 5000,
+                isClosable: true,
+            });
             console.error("Signup failed", error);
         }
     };
@@ -125,8 +158,21 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             await api.post("/logout");
+            navigate("/");
+            toaster.create({
+                description: "Logout successful",
+                type: "success",
+            });
             console.log("Logout successfull");
         } catch (error) {
+            toaster.create({
+                title: "Error: Logout Failed",
+                description:
+                    error.response?.data?.message || "Something went wrong.",
+                type: "error",
+                duration: 5000,
+                isClosable: true,
+            });
             console.error("Logout failed", error);
         }
         setAccessToken(null);
@@ -136,10 +182,21 @@ export const AuthProvider = ({ children }) => {
     // Функція скидання паролю
     const resetPassword = async (email) => {
         try {
-            console.log(email);
             const response = await api.post("/reset-password", { email });
             console.log("Reset Password Response: ", response);
+            toaster.create({
+                description: "Check email for resseting password",
+                type: "success",
+            });
         } catch (error) {
+            toaster.create({
+                title: "Error: Sending Email For Reset Password Failed",
+                description:
+                    error.response?.data?.message || "Something went wrong.",
+                type: "error",
+                duration: 5000,
+                isClosable: true,
+            });
             console.error("Reset Password failed", error);
         }
     };
@@ -150,10 +207,21 @@ export const AuthProvider = ({ children }) => {
             const response = await api.patch(`/auth/update-password`, {
                 newPassword,
             });
-            console.log("Update Password Data: ", response.data);
+            toaster.create({
+                description: "New Password Created",
+                type: "success",
+            });
+            navigate("/");
         } catch (error) {
+            toaster.create({
+                title: "Error: Update Password Failed",
+                description:
+                    error.response?.data?.message || "Something went wrong.",
+                type: "error",
+                duration: 5000,
+                isClosable: true,
+            });
             console.error("Update Password failed", error);
-            throw new Error("Update Password failed");
         }
     };
 

@@ -1,6 +1,14 @@
 import api from "@/api/api";
 import { useAuth } from "@/context/AuthContext";
-import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import {
+    Avatar,
+    Box,
+    Button,
+    Heading,
+    HStack,
+    Stack,
+    Text,
+} from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
@@ -29,13 +37,23 @@ const UserProfile = () => {
 
     return (
         <Box>
-            <Heading>UserProfile</Heading>
-            <Text>Username: {user.username ? user.username : "None"}</Text>
+            <HStack>
+                {user.avatar_url && (
+                    <Avatar.Root>
+                        <Avatar.Fallback name={user.username} />
+                        <Avatar.Image src={user.avatar_url} />
+                    </Avatar.Root>
+                )}
+                <Heading>UserProfile</Heading>
+            </HStack>
+
+            <Text>
+                Username: {user.username ? user.username : user.full_name}
+            </Text>
             <Text>Email: {user.email}</Text>
             <Button
                 onClick={async () => {
                     await logout();
-                    navigate("/");
                 }}>
                 Logout
             </Button>

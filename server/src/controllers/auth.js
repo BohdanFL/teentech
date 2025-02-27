@@ -3,59 +3,119 @@ import supabase from "../config/supabaseClient.js";
 export const login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  try {
+    // Шукаємо користувача за email
+    const { data: existingEmail, error: emailError } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("email", email)
+      .single();
 
-  if (error) {
-    console.log(error);
-    return res.status(401).json({ message: "Invalid credentials" });
+    if (emailError) console.error(emailError);
+
+    if (!existingEmail) {
+      return res
+        .status(400)
+        .json({ field: "email", message: "Email not found" });
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.error(error);
+      return res
+        .status(400)
+        .json({ field: "password", message: error.message });
+    }
+
+    const { access_token, refresh_token } = data.session;
+
+    res.cookie("refresh_token", refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7 * 1000, // 7 днів
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      access_token,
+      user: data.user.user_metadata,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error, please try again later" });
   }
-
-  const { access_token, refresh_token } = data.session;
-
-  // Встановлюємо refresh_token в httpOnly cookie
-  res.cookie("refresh_token", refresh_token, {
-    httpOnly: true,
-    // secure: process.env.NODE_ENV === "production",
-    secure: true,
-    sameSite: "strict",
-    maxAge: 60 * 60 * 24 * 7 * 1000, // 7 днів
-  });
-
-  res.json({
-    access_token,
-    expiresIn: data.session.expires_in,
-    user: data.user.user_metadata,
-  });
 };
 
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        username,
-      },
-      emailRedirectTo: "http://localhost:5173",
-    },
-  });
-  if (error) {
-    console.error(error);
-    return res.status(400).json({ error });
-  }
+  try {
+    const { data: existingEmail, error: emailError } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("email", email)
+      .single();
 
-  console.log(data);
-  res.json({
-    message: "Sign Up Successfull",
-    user: data.user.user_metadata,
-    // access_token: data.session.access_token,
-    // expiresIn: data.session.expires_in,
-  });
+    if (emailError) console.error(emailError);
+
+    if (existingEmail) {
+      return res
+        .status(400)
+        .json({ field: "email", message: "Email already in use" });
+    }
+
+    const { data: existingUsername, error: usernameError } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("username", username)
+      .single();
+
+    if (usernameError) console.error(usernameError);
+
+    if (existingUsername) {
+      return res
+        .status(400)
+        .json({ field: "username", message: "Username already taken" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        field: "password",
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+        },
+        emailRedirectTo: "http://localhost:5173",
+      },
+    });
+
+    if (error) {
+      console.error(error);
+      return res.status(400).json({ message: error.message });
+    }
+
+    // if (error) throw error;
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user: data.user.user_metadata,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error, please try again later" });
+  }
 };
 
 export const logout = async (req, res) => {
@@ -92,7 +152,6 @@ export const signInWithGoogle = async (req, res) => {
     options: {
       redirectTo: "http://localhost:3000/auth/google/callback",
       queryParams: {
-        // access_type: "offline",
         prompt: "consent",
       },
     },
@@ -100,7 +159,7 @@ export const signInWithGoogle = async (req, res) => {
 
   if (error) {
     console.log(error);
-    return res.status(400).json({ error: error.message });
+    return res.status(400).json({ message: error.message });
   }
   console.log("Redirect To: ", data.url);
 
@@ -118,14 +177,12 @@ export const signInWithGoogleCallback = async (req, res) => {
     } = await supabase.auth.exchangeCodeForSession(code);
 
     if (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Sign In With Google Failed" });
+      console.error(error);
+      return res.status(400).json({ message: error.message });
     }
 
-    // Встановлюємо refresh_token в httpOnly cookie
     res.cookie("refresh_token", session.refresh_token, {
       httpOnly: true,
-      // secure: process.env.NODE_ENV === "production",
       secure: true,
       sameSite: "strict",
       maxAge: 60 * 60 * 24 * 7 * 1000, // 7 днів
@@ -148,15 +205,34 @@ export const resetPassword = async (req, res) => {
     return res.status(400).json({ message: "No email provided." });
   }
 
-  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "http://localhost:5173/update-password",
-  });
+  try {
+    const { data: existingEmail, error: emailError } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("email", email)
+      .single();
 
-  if (error) throw error;
+    if (emailError) console.error(emailError);
 
-  return res
-    .status(200)
-    .json({ message: "Password recovery email has been sent." });
+    if (!existingEmail) {
+      return res
+        .status(400)
+        .json({ field: "email", message: "Email not found" });
+    }
+
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "http://localhost:5173/update-password",
+    });
+
+    if (error) throw error;
+
+    return res
+      .status(200)
+      .json({ message: "Password recovery email has been sent." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error, please try again later" });
+  }
 };
 
 export const updatePassword = async (req, res) => {
@@ -184,16 +260,20 @@ export const updatePassword = async (req, res) => {
   //     .json({ message: "Reset Password Failed. Cannot retrieve session." });
   // }
 
-  const { data, error: updateError } = await supabase.auth.updateUser({
-    password: newPassword,
-  });
+  try {
+    const { data, error: updateError } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
 
-  if (updateError) {
-    console.error("Reset password error:", error);
-    return res.status(400).json({ message: error.message });
+    if (updateError) {
+      return res.status(400).json({ message: updateError.message });
+    }
+
+    res.status(200).json({ message: "Password updated successfully." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error, please try again later" });
   }
-
-  res.json({ message: "Password updated successfully." });
 };
 
 export const confirmResettingPassword = async (req, res) => {

@@ -17,7 +17,11 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
-    const { register, handleSubmit } = useForm();
+    const {
+        register,
+        formState: { errors },
+        handleSubmit,
+    } = useForm();
     const { login, signInWithGoogle } = useAuth();
     const navigate = useNavigate();
 
@@ -35,37 +39,53 @@ const Login = () => {
                 <Box minW={{ base: "90%", md: "468px" }}>
                     <form
                         onSubmit={handleSubmit(async (data) => {
-                            console.log(data);
                             await login(data.email, data.password);
-                            navigate("/user-profile");
                         })}>
                         <Stack
                             spacing={4}
                             p="1rem"
                             backgroundColor="whiteAlpha.900"
                             boxShadow="md">
-                            <Field.Root label="email" mb={3}>
+                            <Field.Root
+                                invalid={!!errors.email}
+                                label="email"
+                                mb={3}>
                                 <Field.Label>Email</Field.Label>
                                 <Input
                                     type="email"
                                     placeholder="me@example.com"
-                                    {...register("email", { required: true })}
+                                    {...register("email", {
+                                        required: "Email is required",
+                                        pattern: {
+                                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                            message:
+                                                "Enter a valid email address",
+                                        },
+                                    })}
                                 />
                                 <Field.ErrorText>
-                                    This is an error text
+                                    {errors.email && errors.email.message}
                                 </Field.ErrorText>
                             </Field.Root>
-                            <Field.Root mb={3} label="Password">
+                            <Field.Root
+                                invalid={!!errors.password}
+                                mb={3}
+                                label="Password">
                                 <Field.Label>Password</Field.Label>
 
                                 <PasswordInput
                                     placeholder="password"
                                     {...register("password", {
-                                        required: true,
+                                        required: "Password is required",
+                                        minLength: {
+                                            value: 6,
+                                            message:
+                                                "Password must be at least 6 characters",
+                                        },
                                     })}
                                 />
                                 <Field.ErrorText>
-                                    This is an error text
+                                    {errors.password && errors.password.message}
                                 </Field.ErrorText>
                                 <Field.HelperText w="100%" textAlign="right">
                                     <ChakraLink asChild>

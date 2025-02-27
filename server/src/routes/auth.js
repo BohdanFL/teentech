@@ -9,7 +9,7 @@ import {
   signInWithGoogleCallback,
   resetPassword,
   updatePassword,
-  confirmResettingPassword
+  confirmResettingPassword,
 } from "../controllers/auth.js";
 import authenthicate from "../middleware/authenthicate.js";
 

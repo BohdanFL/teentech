@@ -8,11 +8,12 @@ import {
     Stack,
     Text,
 } from "@chakra-ui/react";
-import { Avatar } from "@/components/ui/avatar";
 import { Link, useLocation } from "react-router";
+import { Avatar } from "@/components/ui/avatar";
 
 const Auth = () => {
     const { pathname } = useLocation();
+    const { user } = useAuth();
     return (
         <Stack
             display="flex"
@@ -20,7 +21,12 @@ const Auth = () => {
             position="absolute"
             top="50px"
             left="50px">
-            <Avatar mb={0} colorPalette="teal" variant="solid" size="lg">
+            <Avatar
+                src={user && user.avatar_url}
+                mb={0}
+                colorPalette="teal"
+                variant="solid"
+                size="lg">
                 <AvatarFallback />
             </Avatar>
 
