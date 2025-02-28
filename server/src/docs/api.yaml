@@ -152,7 +152,7 @@ paths:
                     type: string
                     example: "Logout successful"
 
-  /protected:
+  /auth/protected:
     get:
       summary: Get protected resource (requires authentication)
       tags:
