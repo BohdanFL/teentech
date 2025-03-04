@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "@/components/ui/toaster";
 import Auth from "./pages/Auth";
 import { Flex } from "@chakra-ui/react";
+import WebIDE from "./pages/WebIDE";
 
 function App() {
     return (
@@ -31,6 +32,7 @@ function App() {
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route element={<ProtectedRoute />}>
                         <Route path="/user-profile" element={<UserProfile />} />
+                        <Route path="/ide" element={<WebIDE />} />
                     </Route>
                 </Routes>
             </Flex>
