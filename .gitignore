@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,react,node,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,react,node,visualstudiocode
 
+# todo
+todo.dev.js
+
 ### Node ###
 # Logs
 logs

@@ -5,20 +5,26 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "client": "cd ../client && npm run dev",
+    "start": "concurrently \"npm run dev\" \"npm run client\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@supabase/supabase-js": "^2.47.10",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.48.1",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "concurrently": "^9.1.2",
     "eslint": "^9.17.0",
     "eslint-config-node": "^4.1.0",
     "eslint-config-prettier": "^9.1.0",
@@ -27,6 +33,9 @@
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^15.14.0",
     "nodemon": "^3.1.9",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
   }
 }
