@@ -23,16 +23,16 @@ router.post("/logout", logout);
 
 router.post("/reset-password", resetPassword);
 
-router.patch("/auth/update-password", updatePassword);
+router.patch("/update-password", updatePassword);
 
-router.get("/auth/confirm", confirmResettingPassword);
+router.get("/confirm-reset", confirmResettingPassword);
 
 router.get("/refresh-token", refreshToken);
 
 router.get("/protected", authenthicate, getProtected);
 
-router.get("/auth/google", signInWithGoogle);
+router.get("/google", signInWithGoogle);
 
-router.get("/auth/google/callback", signInWithGoogleCallback);
+router.get("/google/callback", signInWithGoogleCallback);
 
 export default router;
