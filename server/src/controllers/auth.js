@@ -138,7 +138,7 @@ export const signInWithGoogleCallback = async (req, res) => {
     console.log(session);
   }
 
-  res.redirect("http://localhost:5173/user-profile");
+  res.redirect("http://localhost:5173/pantry"); ///змінено перенаправлення із сторінки користувача на коморку
 };
 
 export const resetPassword = async (req, res) => {

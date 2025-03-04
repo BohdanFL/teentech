@@ -37,7 +37,7 @@ const Login = () => {
                         onSubmit={handleSubmit(async (data) => {
                             console.log(data);
                             await login(data.email, data.password);
-                            navigate("/user-profile");
+                            navigate("/pantry");
                         })}>
                         <Stack
                             spacing={4}

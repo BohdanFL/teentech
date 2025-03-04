@@ -101,7 +101,7 @@ const SignUp = () => {
                     variant="solid"
                     colorPalette="teal"
                     onClick={() => {
-                        signInWithGoogle();
+                       signInWithGoogle();
                     }}>
                     Sign In With Google
                 </Button>

@@ -6,7 +6,11 @@ import UpdatePassword from "./pages/UpdatePassword";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Auth from "./pages/Auth";
+import Pantry from "./pages/Pantry";
+import ITCompany from "./pages/ITCompany";
+import VSCode from "./pages/VSCode";
 import { Flex } from "@chakra-ui/react";
+
 
 function App() {
     return (
@@ -28,7 +32,10 @@ function App() {
                     />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route element={<ProtectedRoute />}>
+                        <Route path="/pantry" element={<Pantry />} />
+                        <Route path="/it-company" element={<ITCompany />} />
                         <Route path="/user-profile" element={<UserProfile />} />
+                        <Route path="/vscode" element={<VSCode />} />
                     </Route>
                 </Routes>
             </Flex>

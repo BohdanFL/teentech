@@ -13,13 +13,19 @@ import { Link, useLocation } from "react-router";
 
 const Auth = () => {
     const { pathname } = useLocation();
+    const {user} = useAuth()
+
+    if (pathname !== "/" && pathname !== "/signup" && pathname !== "/user-profile" || user !== undefined ) 
+        {return null}; ///Перевіряємо чи знаходимося на сторінці / або /signup
+
+
     return (
         <Stack
             display="flex"
             alignItems="center"
             position="absolute"
             top="50px"
-            left="50px">
+            right="50px">
             <Avatar mb={0} colorPalette="teal" variant="solid" size="lg">
                 <AvatarFallback />
             </Avatar>
