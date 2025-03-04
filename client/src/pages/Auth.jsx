@@ -8,12 +8,13 @@ import {
     Stack,
     Text,
 } from "@chakra-ui/react";
-import { Link, useLocation } from "react-router";
+import { Link, Navigate, useLocation } from "react-router";
 import { Avatar } from "@/components/ui/avatar";
 
 const Auth = () => {
     const { pathname } = useLocation();
     const { user } = useAuth();
+
     return (
         <Stack
             display="flex"
@@ -32,7 +33,7 @@ const Auth = () => {
 
             <ChakraLink color="teal.500" asChild>
                 {pathname === "/user-profile" ? (
-                    <Link to={-1}>Go Back</Link>
+                    <Link to={"/"}>Go Back</Link>
                 ) : (
                     <Link to="/user-profile">User Profile</Link>
                 )}

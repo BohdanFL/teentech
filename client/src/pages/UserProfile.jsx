@@ -1,4 +1,3 @@
-import api from "@/api/api";
 import { useAuth } from "@/context/AuthContext";
 import {
     Avatar,
@@ -16,10 +15,9 @@ import { useNavigate } from "react-router";
 const UserProfile = () => {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
-    console.log(user);
     // Fetching user data with useQuery.
     // const fetchUser = async () => {
-    //     const response = await api.get("/protected");
+    //     const response = await api.get("/auth/protected");
     //     if (!response.ok && !response.data.user) {
     //         return new Error("Network response was not ok");
     //     }

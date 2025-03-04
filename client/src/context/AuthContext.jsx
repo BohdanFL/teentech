@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
         const refresh = async () => {
             try {
                 // TODO: Тут можна змінити на отримання користувача замість просто рефрешу токена
-                const response = await api.get("/refresh-token");
+                const response = await api.get("/auth/refresh-token");
                 setAccessToken(response.data.access_token);
                 setUser(response.data.user);
                 console.log("Refreshing token...");
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
                     error.response.data.message === "Unauthorized"
                 ) {
                     try {
-                        const response = await api.get("/refresh-token");
+                        const response = await api.get("/auth/refresh-token");
 
                         setAccessToken(response.data.access_token);
 
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
     // Функція логіну
     const login = async (email, password) => {
         try {
-            const response = await api.post("/login", { email, password });
+            const response = await api.post("/auth/login", { email, password });
 
             setAccessToken(response.data.access_token);
             setUser(response.data.user);
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }) => {
     // Функція реєстрації
     const signup = async (email, password, username) => {
         try {
-            const response = await api.post("/signup", {
+            const response = await api.post("/auth/signup", {
                 email,
                 password,
                 username,
@@ -137,7 +137,6 @@ export const AuthProvider = ({ children }) => {
             console.error("Signup failed", error);
         }
     };
-
     const signInWithGoogle = async () => {
         try {
             window.location.href = "http://localhost:3000/auth/google";
@@ -157,7 +156,7 @@ export const AuthProvider = ({ children }) => {
     // Функція виходу
     const logout = async () => {
         try {
-            await api.post("/logout");
+            await api.post("/auth/logout");
             navigate("/");
             toaster.create({
                 description: "Logout successful",
@@ -182,7 +181,7 @@ export const AuthProvider = ({ children }) => {
     // Функція скидання паролю
     const resetPassword = async (email) => {
         try {
-            const response = await api.post("/reset-password", { email });
+            const response = await api.post("/auth/reset-password", { email });
             console.log("Reset Password Response: ", response);
             toaster.create({
                 description: "Check email for resseting password",
